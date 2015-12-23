@@ -9,6 +9,9 @@
 			<trans-unit id="results">
 				<source>results</source>
 			</trans-unit>
+			<trans-unit id="result">
+				<source>result</source>
+			</trans-unit>
 			<trans-unit id="language.de">
 				<source>German</source>
 			</trans-unit>

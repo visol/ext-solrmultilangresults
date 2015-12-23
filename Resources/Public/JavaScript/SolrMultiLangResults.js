@@ -22,6 +22,11 @@ var SolrMultiLangResults = {
 				if (numberOfResults > 0) {
 					var $targetElement = $('.result-hint[data-language=' + languageUid + ']');
 					$targetElement.find('.resultsCount').html(numberOfResults);
+					if (numberOfResults == 1) {
+						$targetElement.find('.label-results').hide();
+					} else {
+						$targetElement.find('.label-result').hide();
+					}
 					var $targetLink = $targetElement.find('a');
 					var linkToSearch = $targetLink.attr('href') + '?id=' + searchPageUid + '&q=' + queryString;
 					$targetLink.attr('href', linkToSearch);

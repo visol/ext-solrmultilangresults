@@ -1,9 +1,9 @@
 <ul class="solr-multilang-results-hints" data-searchpageuid="{currentPageId}" style="display: none;">
 	<f:for each="{includedLanguages}" as="language">
 		<li style="display: none;" class="result-hint" data-language="{language.uid}" data-queryuri="{f:uri.page(absolute: 1, noCacheHash: 1, additionalParams:{eID: 'tx_solrmultilangresults_results'})}&id={currentPageId}&L={language.uid}">
-			<f:link.page additionalParams="{L: language.uid}" target="_blank">
+			<f:link.page additionalParams="{L: language.uid}">
 				{f:translate(key: 'showResultsIn', arguments: '{0: \'{language.label}\'}')}
-				(<span class="resultsCount"></span> {f:translate(key:'results')})
+				(<span class="resultsCount"></span> <span class="label-result">{f:translate(key:'result')})</span><span class="label-results">{f:translate(key:'results')})</span>
 			</f:link.page>
 		</li>
 	</f:for>

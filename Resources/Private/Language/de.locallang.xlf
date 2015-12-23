@@ -6,6 +6,9 @@
 			<trans-unit id="showResultsIn">
 				<target>Zeige Ergebnisse auf %s</target>
 			</trans-unit>
+			<trans-unit id="result">
+				<target>Treffer</target>
+			</trans-unit>
 			<trans-unit id="results">
 				<target>Treffer</target>
 			</trans-unit>
