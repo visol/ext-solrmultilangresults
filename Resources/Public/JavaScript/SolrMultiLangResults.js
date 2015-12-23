@@ -23,8 +23,10 @@ var SolrMultiLangResults = {
 					var $targetElement = $('.result-hint[data-language=' + languageUid + ']');
 					$targetElement.find('.resultsCount').html(numberOfResults);
 					if (numberOfResults == 1) {
+						// Hide plural "results" label
 						$targetElement.find('.label-results').hide();
 					} else {
+						// Hide singular "result" label
 						$targetElement.find('.label-result').hide();
 					}
 					var $targetLink = $targetElement.find('a');
@@ -44,8 +46,7 @@ $(function () {
 	var queryString = $('.tx-solr-q', '#tx-solr-search').val();
 	if (queryString) {
 		$.each($resultHintConfigurations, function () {
-			var $this = $(this);
-			SolrMultiLangResults.getResultsHint($this);
+			SolrMultiLangResults.getResultsHint($(this));
 		});
 		$.when.apply(null, SolrMultiLangResultsConfig.queue).done(function () {
 			if (SolrMultiLangResultsConfig.showResultsHints) {
