@@ -8,7 +8,7 @@ This extension displays a hint about search results in other languages of a webs
 Installation
 ------------
 
-The extension was developped for pre-namespaced Solr 3.1 and runs on TYPO3 6.2.
+The extension was developed for pre-namespaced Solr 3.1 and runs on TYPO3 6.2.
 
 * Install extension
 * Add the Static TypoScript file and adapt the configuration if needed.
