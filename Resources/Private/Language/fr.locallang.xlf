@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2015-12-21T21:48:39Z" product-name="solrmultilangresults">
+		<header/>
+		<body>
+			<trans-unit id="language.de">
+				<target>Allemand</target>
+			</trans-unit>
+			<trans-unit id="language.en">
+				<target>Anglais</target>
+			</trans-unit>
+			<trans-unit id="language.fr">
+				<target>Français</target>
+			</trans-unit>
+			<trans-unit id="language.it">
+				<target>Italien</target>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

@@ -1,0 +1,24 @@
+plugin.tx_solrmultilangresults {
+	view {
+		templateRootPath = {$plugin.tx_solrmultilangresults.view.templateRootPath}
+		partialRootPath = {$plugin.tx_solrmultilangresults.view.partialRootPath}
+		layoutRootPath = {$plugin.tx_solrmultilangresults.view.layoutRootPath}
+	}
+	persistence {
+		storagePid = {$plugin.tx_solrmultilangresults.persistence.storagePid}
+	}
+
+	settings {
+		# ISO code (flag) of the default language, this is used to fetch the correct localized label
+		defaultLanguageFlag = de
+		# Title of the default language, this is used as fallback if no localized label is available
+		defaultLanguageTitle = Deutsch
+		# Languages to be excluded
+		#excludedLanguages = 2
+	}
+}
+
+# Include JS file
+# Please note that the actual output is placed into a <div class="solrmultilangresults-container"></div>.
+# This div must be added to the page the plugin is used in, e.g. to the Solr results template.
+#page.includeJSFooterlibs.solrMultiLangSearchResults = EXT:solrmultilangresults/Resources/Public/JavaScript/SolrMultiLangResults.js
