@@ -3,7 +3,7 @@
 	"type": "typo3-cms-extension",
 	"description": "Displays a hint about search results in other languages of a website",
 	"homepage": "https://github.com/visol/ext-solrmultilangresults",
-	"license": ["GPL-2.0+"],
+	"license": ["GPL-2.0-or-later"],
 	"require": {
 		"typo3/cms-core": "6.2.*"
 	}
