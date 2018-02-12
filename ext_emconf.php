@@ -10,26 +10,26 @@
  * "version" and "dependencies" must not be touched!
  ***************************************************************/
 
-$EM_CONF[$_EXTKEY] = array(
-	'title' => 'Solr multi-language results',
-	'description' => 'Displays a hint about search results in other languages of a website.',
-	'category' => 'plugin',
-	'author' => 'Lorenz Ulrich',
-	'author_email' => 'lorenz.ulrich@visol.ch',
-	'state' => 'stable',
-	'internal' => '',
-	'uploadfolder' => '0',
-	'createDirs' => '',
-	'clearCacheOnLoad' => 0,
-	'version' => '1.0.1',
-	'constraints' => array(
-		'depends' => array(
-			'typo3' => '6.2.0-6.2.99',
+$EM_CONF[$_EXTKEY] = [
+    'title' => 'Solr multi-language results',
+    'description' => 'Displays a hint about search results in other languages of a website.',
+    'category' => 'plugin',
+    'author' => 'Lorenz Ulrich',
+    'author_email' => 'lorenz.ulrich@visol.ch',
+    'state' => 'stable',
+    'internal' => '',
+    'uploadfolder' => '0',
+    'createDirs' => '',
+    'clearCacheOnLoad' => 0,
+    'version' => '1.0.1',
+    'constraints' => [
+        'depends' => [
+            'typo3' => '6.2.0-6.2.99',
             'solr' => '3.1.0-3.1.99'
-		),
-		'conflicts' => array(
-		),
-		'suggests' => array(
-		),
-	),
-);
+        ],
+        'conflicts' => [
+        ],
+        'suggests' => [
+        ],
+    ],
+];

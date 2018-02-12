@@ -1,19 +1,19 @@
 <?php
 if (!defined('TYPO3_MODE')) {
-	die('Access denied.');
+    die('Access denied.');
 }
 
 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
-	'Visol.' . $_EXTKEY,
-	'Solrmultilangresults',
-	array(
-		'Results' => 'index',
-		
-	),
-	// non-cacheable actions
-	array(
-		
-	)
+    'Visol.' . $_EXTKEY,
+    'Solrmultilangresults',
+    [
+        'Results' => 'index',
+
+    ],
+    // non-cacheable actions
+    [
+
+    ]
 );
 
 // Register EID for seach results

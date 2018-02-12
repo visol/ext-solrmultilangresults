@@ -1,4 +1,5 @@
 <?php
+
 namespace Visol\Solrmultilangresults\Controller;
 
 /**
@@ -30,12 +31,15 @@ class ResultsController extends ActionController
         $currentLanguage = (int)$GLOBALS['TSFE']->sys_language_uid;
 
         // Get all system languages
-        $systemLanguages = $this->getDatabaseConnection()->exec_SELECTgetRows('*', 'sys_language',
-            '1=1' . BackendUtility::deleteClause('sys_language') . ' AND uid NOT IN(' . $this->settings['excludedLanguages'] . ')');
+        $systemLanguages = $this->getDatabaseConnection()->exec_SELECTgetRows(
+            '*',
+            'sys_language',
+            '1=1' . BackendUtility::deleteClause('sys_language') . ' AND uid NOT IN(' . $this->settings['excludedLanguages'] . ')'
+        );
         // We add the default language
-        $systemLanguages[] = array('uid' => 0);
+        $systemLanguages[] = ['uid' => 0];
 
-        $includedLanguages = array();
+        $includedLanguages = [];
         $i = 0;
         foreach ($systemLanguages as $key => $systemLanguage) {
             if ((int)$systemLanguage['uid'] === $currentLanguage) {
@@ -54,11 +58,12 @@ class ResultsController extends ActionController
      * Use configured default language label
      *
      * @param $systemLanguage
+     *
      * @return array
      */
     public function getDataForLanguage($systemLanguage)
     {
-        $language = array();
+        $language = [];
         if ((int)$systemLanguage['uid'] === 0) {
             // The default language
             $systemLanguage['flag'] = $this->settings['defaultLanguageFlag'];
@@ -84,5 +89,4 @@ class ResultsController extends ActionController
     {
         return $GLOBALS['TYPO3_DB'];
     }
-
 }

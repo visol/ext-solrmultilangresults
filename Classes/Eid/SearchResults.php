@@ -1,4 +1,5 @@
 <?php
+
 namespace Visol\Solrmultilangresults\Eid;
 
 /**
@@ -30,7 +31,7 @@ class SearchResults
         /** @var \Tx_Solr_PiResults_Results $searcher */
         $searcher = GeneralUtility::makeInstance('\Tx_Solr_PiResults_Results');
         $searcher->cObj = GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
-        $searcher->main('', array());
+        $searcher->main('', []);
         $this->searcher = $searcher;
     }
 
@@ -49,7 +50,7 @@ class SearchResults
         $q = GeneralUtility::_GP('q');
         /** @var \Tx_Solr_Query $query */
         $query = GeneralUtility::makeInstance('\Tx_Solr_Query', $q);
-        $query->setFieldList(array('title', 'url', 'teaser', 'score'));
+        $query->setFieldList(['title', 'url', 'teaser', 'score']);
         $query->setUserAccessGroups(explode(',', $GLOBALS['TSFE']->gr_list));
         $query->setSiteHashFilter($allowedSites);
         $this->searcher->getSearch()->search($query);
@@ -91,8 +92,6 @@ class SearchResults
         }
         $GLOBALS['TSFE']->settingLocale();
     }
-
-
 }
 
 /**
@@ -101,7 +100,7 @@ class SearchResults
 $searchResults = GeneralUtility::makeInstance('Visol\\Solrmultilangresults\\Eid\\SearchResults');
 
 // Get and JSONify the number of results for a query
-$data = json_encode(array('numberOfResults' => $searchResults->getNumberOfResults()));
+$data = json_encode(['numberOfResults' => $searchResults->getNumberOfResults()]);
 header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
 header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
 header('Cache-Control: no-cache, must-revalidate');
