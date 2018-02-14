@@ -8,7 +8,7 @@ This extension displays a hint about search results in other languages of a webs
 Installation
 ------------
 
-The extension was developed Solr 7.5 and runs on TYPO3 8.7 LTS. It might run on TYPO3 7.6 LTS as well but was not tested with any other TYPO3 or Solr version.
+The extension was developed for Solr 7.5 and runs on TYPO3 8.7 LTS. It might run on TYPO3 7.6 LTS as well but was not tested with any other TYPO3 or Solr version.
 
 Installation with Composer:
 
