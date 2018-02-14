@@ -5,6 +5,12 @@
 	"homepage": "https://github.com/visol/ext-solrmultilangresults",
 	"license": ["GPL-2.0-or-later"],
 	"require": {
-		"typo3/cms-core": "6.2.*"
+		"typo3/cms": ">=8.7.0",
+		"typo3-ter/solr": "^7.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"Visol\\Solrmultilangresults\\": "Classes"
+		}
 	}
 }

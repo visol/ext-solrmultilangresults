@@ -14,24 +14,39 @@ namespace Visol\Solrmultilangresults\Eid;
  *
  * The TYPO3 project - inspiring people to share!
  */
-use Tx_Solr_Util;
+use ApacheSolrForTypo3\Solr\ConnectionManager;
+use ApacheSolrForTypo3\Solr\Domain\Search\Query\ParameterBuilder\ReturnFields;
+use ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\SearchResultSetService;
+use ApacheSolrForTypo3\Solr\Domain\Site\SiteHashService;
+use ApacheSolrForTypo3\Solr\Query;
+use ApacheSolrForTypo3\Solr\Search;
+use ApacheSolrForTypo3\Solr\Util;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
+use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
+use TYPO3\CMS\Frontend\Utility\EidUtility;
 
 class SearchResults
 {
 
     /**
-     * @var \Tx_Solr_PiResults_Results
+     * @var SearchResultSetService
      */
     protected $searcher;
 
     public function __construct()
     {
         $this->initTSFE();
-        /** @var \Tx_Solr_PiResults_Results $searcher */
-        $searcher = GeneralUtility::makeInstance('\Tx_Solr_PiResults_Results');
-        $searcher->cObj = GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
-        $searcher->main('', []);
+        /** @var \ApacheSolrForTypo3\Solr\ConnectionManager $solrConnection */
+        $solrConnection = GeneralUtility::makeInstance(ConnectionManager::class)->getConnectionByPageId(
+            $GLOBALS['TSFE']->id,
+            $GLOBALS['TSFE']->sys_language_uid,
+            $GLOBALS['TSFE']->MP
+        );
+        $search = GeneralUtility::makeInstance(Search::class, $solrConnection);
+        /** @var SearchResultSetService $searcher */
+        $searcher = GeneralUtility::makeInstance(SearchResultSetService::class, Util::getSolrConfiguration(), $search);
+        $searcher->cObj = GeneralUtility::makeInstance(ContentObjectRenderer::class);
         $this->searcher = $searcher;
     }
 
@@ -42,15 +57,19 @@ class SearchResults
      */
     public function getNumberOfResults()
     {
-        $solrConfiguration = Tx_Solr_Util::getSolrConfiguration();
-        $allowedSites = Tx_Solr_Util::resolveSiteHashAllowedSites(
-            GeneralUtility::_GP('id'),
-            $solrConfiguration['search.']['query.']['allowedSites']
+        $solrConfiguration = Util::getSolrConfiguration();
+
+        /** @var $siteHashService SiteHashService */
+        $siteHashService = GeneralUtility::makeInstance(SiteHashService::class);
+        $allowedSites = $siteHashService->getAllowedSitesForPageIdAndAllowedSitesConfiguration(
+            GeneralUtility::_GP((int)'id'),
+            $solrConfiguration->getValueByPath('plugin.tx_solr.search.query.allowedSites', '__solr_current_site')
         );
         $q = GeneralUtility::_GP('q');
-        /** @var \Tx_Solr_Query $query */
-        $query = GeneralUtility::makeInstance('\Tx_Solr_Query', $q);
-        $query->setFieldList(['title', 'url', 'teaser', 'score']);
+        /** @var Query $query */
+        $query = GeneralUtility::makeInstance(Query::class, $q);
+        $returnFields = ReturnFields::fromArray(['title', 'url', 'teaser', 'score']);
+        $query->setReturnFields($returnFields);
         $query->setUserAccessGroups(explode(',', $GLOBALS['TSFE']->gr_list));
         $query->setSiteHashFilter($allowedSites);
         $this->searcher->getSearch()->search($query);
@@ -72,14 +91,14 @@ class SearchResults
         $pageId = GeneralUtility::_GP('id');
         /** @var \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController $tsfe */
         $GLOBALS['TSFE'] = GeneralUtility::makeInstance(
-            'TYPO3\\CMS\\Frontend\\Controller\\TypoScriptFrontendController',
+            TypoScriptFrontendController::class,
             $GLOBALS['TYPO3_CONF_VARS'],
             $pageId,
             ''
         );
 
-        \TYPO3\CMS\Frontend\Utility\EidUtility::initLanguage();
-        \TYPO3\CMS\Frontend\Utility\EidUtility::initTCA();
+        EidUtility::initLanguage();
+        EidUtility::initTCA();
 
         $GLOBALS['TSFE']->initFEuser();
         // We do not want (nor need) EXT:realurl to be invoked:
@@ -97,11 +116,11 @@ class SearchResults
 /**
  * @var $searchResults \Visol\Solrmultilangresults\Eid\SearchResults
  */
-$searchResults = GeneralUtility::makeInstance('Visol\\Solrmultilangresults\\Eid\\SearchResults');
+$searchResults = GeneralUtility::makeInstance(SearchResults::class);
 
 // Get and JSONify the number of results for a query
 $data = json_encode(['numberOfResults' => $searchResults->getNumberOfResults()]);
-header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+header('Expires: Wed, 23 Nov 1983 18:00:00 GMT');
 header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
 header('Cache-Control: no-cache, must-revalidate');
 header('Pragma: no-cache');
