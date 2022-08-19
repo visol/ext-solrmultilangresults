@@ -1,13 +1,15 @@
 <?php
-if (!defined('TYPO3_MODE')) {
+use Visol\Solrmultilangresults\Controller\ResultsController;
+use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
+if (!defined('TYPO3')) {
     die('Access denied.');
 }
 
-\TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
-    'Visol.' . $_EXTKEY,
+ExtensionUtility::configurePlugin(
+    'Solrmultilangresults',
     'Solrmultilangresults',
     [
-        'Results' => 'index',
+        ResultsController::class => 'index',
 
     ],
     // non-cacheable actions
@@ -17,4 +19,4 @@ if (!defined('TYPO3_MODE')) {
 );
 
 // Register EID for seach results
-$GLOBALS['TYPO3_CONF_VARS']['FE']['eID_include']['tx_solrmultilangresults_results'] = 'EXT:' . $_EXTKEY . '/Classes/Eid/SearchResults.php';
+$GLOBALS['TYPO3_CONF_VARS']['FE']['eID_include']['tx_solrmultilangresults_results'] = 'EXT:' . 'solrmultilangresults' . '/Classes/Eid/SearchResults.php';
