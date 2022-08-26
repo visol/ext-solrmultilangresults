@@ -14,6 +14,8 @@ namespace Visol\Solrmultilangresults\Eid;
  *
  * The TYPO3 project - inspiring people to share!
  */
+use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Localization\Locales;
 use ApacheSolrForTypo3\Solr\ConnectionManager;
 use ApacheSolrForTypo3\Solr\Domain\Search\Query\ParameterBuilder\ReturnFields;
 use ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\SearchResultSetService;
@@ -37,10 +39,10 @@ class SearchResults
     public function __construct()
     {
         $this->initTSFE();
-        /** @var \ApacheSolrForTypo3\Solr\ConnectionManager $solrConnection */
+        /** @var ConnectionManager $solrConnection */
         $solrConnection = GeneralUtility::makeInstance(ConnectionManager::class)->getConnectionByPageId(
             $GLOBALS['TSFE']->id,
-            $GLOBALS['TSFE']->sys_language_uid,
+            GeneralUtility::makeInstance(Context::class)->getPropertyFromAspect('language', 'id'),
             $GLOBALS['TSFE']->MP
         );
         $search = GeneralUtility::makeInstance(Search::class, $solrConnection);
@@ -70,7 +72,7 @@ class SearchResults
         $query = GeneralUtility::makeInstance(Query::class, $q);
         $returnFields = ReturnFields::fromArray(['title', 'url', 'teaser', 'score']);
         $query->setReturnFields($returnFields);
-        $query->setUserAccessGroups(explode(',', $GLOBALS['TSFE']->gr_list));
+        $query->setUserAccessGroups(explode(',', implode(',', GeneralUtility::makeInstance(Context::class)->getPropertyFromAspect('frontend.user', 'groupIds'))));
         $query->setSiteHashFilter($allowedSites);
         $this->searcher->getSearch()->search($query);
         $response = $this->searcher->getSearch()->getResponse();
@@ -89,27 +91,21 @@ class SearchResults
     protected function initTSFE()
     {
         $pageId = GeneralUtility::_GP('id');
-        /** @var \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController $tsfe */
+        /** @var TypoScriptFrontendController $tsfe */
         $GLOBALS['TSFE'] = GeneralUtility::makeInstance(
             TypoScriptFrontendController::class,
             $GLOBALS['TYPO3_CONF_VARS'],
             $pageId,
             ''
         );
-
-        EidUtility::initLanguage();
-        EidUtility::initTCA();
-
-        $GLOBALS['TSFE']->initFEuser();
         // We do not want (nor need) EXT:realurl to be invoked:
         //$GLOBALS['TSFE']->checkAlternativeIdMethods();
         $GLOBALS['TSFE']->determineId();
-        $GLOBALS['TSFE']->initTemplate();
         $GLOBALS['TSFE']->getConfigArray();
         if ($pageId > 0) {
             $GLOBALS['TSFE']->settingLanguage();
         }
-        $GLOBALS['TSFE']->settingLocale();
+        Locales::setSystemLocaleFromSiteLanguage($GLOBALS['TSFE']->getLanguage());
     }
 }
 

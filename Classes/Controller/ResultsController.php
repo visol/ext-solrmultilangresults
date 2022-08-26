@@ -14,7 +14,9 @@ namespace Visol\Solrmultilangresults\Controller;
  *
  * The TYPO3 project - inspiring people to share!
  */
-
+use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -26,9 +28,9 @@ class ResultsController extends ActionController
      * A plugin that renders a list of links to search results in other languages
      * The results are invisible by default and populated and shown by JavaScript
      */
-    public function indexAction()
+    public function indexAction(): ResponseInterface
     {
-        $currentLanguage = (int)$GLOBALS['TSFE']->sys_language_uid;
+        $currentLanguage = (int)GeneralUtility::makeInstance(Context::class)->getPropertyFromAspect('language', 'id');
 
         // Get all system languages
         $systemLanguages = $this->getDatabaseConnection()->exec_SELECTgetRows(
@@ -51,6 +53,7 @@ class ResultsController extends ActionController
         }
         $this->view->assign('includedLanguages', $includedLanguages);
         $this->view->assign('currentPageId', (int)$GLOBALS['TSFE']->id);
+        return $this->htmlResponse();
     }
 
     /**
