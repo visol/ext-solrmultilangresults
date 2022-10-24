@@ -15,9 +15,10 @@ namespace Visol\Solrmultilangresults\Controller;
  * The TYPO3 project - inspiring people to share!
  */
 use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Context\Context;
-use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
@@ -30,14 +31,20 @@ class ResultsController extends ActionController
      */
     public function indexAction(): ResponseInterface
     {
-        $currentLanguage = (int)GeneralUtility::makeInstance(Context::class)->getPropertyFromAspect('language', 'id');
+        $languageAspect = GeneralUtility::makeInstance(Context::class)->getAspect('language');
+        $currentLanguage = $languageAspect->getId();
 
-        // Get all system languages
-        $systemLanguages = $this->getDatabaseConnection()->exec_SELECTgetRows(
-            '*',
-            'sys_language',
-            '1=1' . BackendUtility::deleteClause('sys_language') . ' AND uid NOT IN(' . $this->settings['excludedLanguages'] . ')'
-        );
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_language');
+        $queryBuilder
+            ->getRestrictions()
+            ->removeAll()
+            ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+
+        $systemLanguages = $queryBuilder->select('uid')
+            ->from('sys_language')
+            ->where($queryBuilder->expr()->notIn('uid', $this->settings['excludedLanguages']))
+            ->execute()->fetchAllAssociative();
+
         // We add the default language
         $systemLanguages[] = ['uid' => 0];
 
@@ -64,7 +71,7 @@ class ResultsController extends ActionController
      *
      * @return array
      */
-    public function getDataForLanguage($systemLanguage)
+    public function getDataForLanguage($systemLanguage): array
     {
         $language = [];
         if ((int)$systemLanguage['uid'] === 0) {
@@ -83,13 +90,5 @@ class ResultsController extends ActionController
         }
         $language['uid'] = (int)$systemLanguage['uid'];
         return $language;
-    }
-
-    /**
-     * @return \TYPO3\CMS\Core\Database\DatabaseConnection
-     */
-    public function getDatabaseConnection()
-    {
-        return $GLOBALS['TYPO3_DB'];
     }
 }
