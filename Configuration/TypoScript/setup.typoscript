@@ -4,17 +4,10 @@ plugin.tx_solrmultilangresults {
 		partialRootPath = {$plugin.tx_solrmultilangresults.view.partialRootPath}
 		layoutRootPath = {$plugin.tx_solrmultilangresults.view.layoutRootPath}
 	}
-	persistence {
-		storagePid = {$plugin.tx_solrmultilangresults.persistence.storagePid}
-	}
 
 	settings {
-		# ISO code (flag) of the default language, this is used to fetch the correct localized label
-		defaultLanguageFlag = de
-		# Title of the default language, this is used as fallback if no localized label is available
-		defaultLanguageTitle = Deutsch
-		# Languages to be excluded
-		#excludedLanguages = 2
+		# Languages to be excluded, comma-separated
+		#excludedLanguages = 2,3
 	}
 }
 

@@ -14,9 +14,10 @@ namespace Visol\Solrmultilangresults\Controller;
  *
  * The TYPO3 project - inspiring people to share!
  */
+
 use Psr\Http\Message\ResponseInterface;
-use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
+use TYPO3\CMS\Core\Site\Entity\Site;
+use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
@@ -34,30 +35,24 @@ class ResultsController extends ActionController
         $languageAspect = GeneralUtility::makeInstance(Context::class)->getAspect('language');
         $currentLanguage = $languageAspect->getId();
 
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_language');
-        $queryBuilder
-            ->getRestrictions()
-            ->removeAll()
-            ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
-
-        $systemLanguages = $queryBuilder->select('uid')
-            ->from('sys_language')
-            ->where($queryBuilder->expr()->notIn('uid', $this->settings['excludedLanguages']))
-            ->execute()->fetchAllAssociative();
-
-        // We add the default language
-        $systemLanguages[] = ['uid' => 0];
+        /** @var Site $site */
+        $site = $this->request->getAttribute('site');
+        $systemLanguages = $site->getAllLanguages();
 
         $includedLanguages = [];
-        $i = 0;
-        foreach ($systemLanguages as $key => $systemLanguage) {
-            if ((int)$systemLanguage['uid'] === $currentLanguage) {
+        /** @var SiteLanguage $systemLanguage */
+        foreach ($systemLanguages as $systemLanguage) {
+            if ($systemLanguage->getLanguageId() === $currentLanguage) {
                 // We ignore the current language
                 continue;
             }
-            $includedLanguages[$i] = $this->getDataForLanguage($systemLanguage);
-            $i++;
+            if (in_array($systemLanguage->getLanguageId(), explode(',', $this->settings['excludedLanguages']))) {
+                // We ignore excluded languages
+                continue;
+            }
+            $includedLanguages[] = $this->getDataForLanguage($systemLanguage);
         }
+
         $this->view->assign('includedLanguages', $includedLanguages);
         $this->view->assign('currentPageId', (int)$GLOBALS['TSFE']->id);
         return $this->htmlResponse();
@@ -65,30 +60,19 @@ class ResultsController extends ActionController
 
     /**
      * Gets a localized label for the language if it can be found
-     * Use configured default language label
-     *
-     * @param $systemLanguage
-     *
-     * @return array
+     * Fall back to SiteLanguage title of not found
      */
-    public function getDataForLanguage($systemLanguage): array
+    public function getDataForLanguage(SiteLanguage $siteLanguage): array
     {
         $language = [];
-        if ((int)$systemLanguage['uid'] === 0) {
-            // The default language
-            $systemLanguage['flag'] = $this->settings['defaultLanguageFlag'];
+        $language['label'] = LocalizationUtility::translate(
+            'language.' . $siteLanguage->getTwoLetterIsoCode(),
+            'solrmultilangresults'
+        );
+        if (!$language['label']) {
+            $language['label'] = $siteLanguage->getTitle();
         }
-        $languageLabel = LocalizationUtility::translate('language.' . $systemLanguage['flag'], 'solrmultilangresults');
-        if (!$languageLabel) {
-            if ((int)$systemLanguage['uid'] === 0) {
-                $language['label'] = $this->settings['defaultLanguageTitle'];
-            } else {
-                $language['label'] = $systemLanguage['title'];
-            }
-        } else {
-            $language['label'] = $languageLabel;
-        }
-        $language['uid'] = (int)$systemLanguage['uid'];
+        $language['uid'] = $siteLanguage->getLanguageId();
         return $language;
     }
 }
